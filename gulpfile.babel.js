@@ -17,6 +17,7 @@ import stream           from    'stream';
 import gutil            from    'gulp-util';
 import del              from    'del'; //Comging with gulp
 import htmlmin          from    'gulp-htmlmin';
+import babel            from    'gulp-babel';
 
 /* Constants  */
 
@@ -33,7 +34,9 @@ const scssPaths = {
 
 const assets = {
     srcImg: `${paths.src}/img/**/*`,
-    distImg: `${paths.dist}/img`
+    distImg: `${paths.dist}/img`,
+    srcJs: `${paths.src}/js/main.js`,
+    disJs: `${paths.dist}/js/`,
 }
 
 
@@ -120,9 +123,26 @@ gulp.task('engine:images', () =>{
         })
 })
 
+
+/*
+
+    Process Javascript
+
+*/
+
+gulp.task('engine:js', () => {
+    return gulp.src(assets.srcJs)
+    	.pipe(babel({
+    		presets: ['es2015']
+    	}))
+    	.pipe(gulp.dest(assets.disJs))
+        .on('end', () => {
+            gutil.log(gutil.colors.yellow('Finished engine:js'));
+        })
+})
+
+
 /* UTILS */
-
-
 /*
     Clean
     --------
@@ -130,7 +150,7 @@ gulp.task('engine:images', () =>{
 */
 
 gulp.task('utils:clean', () => {
-    del([paths.dist+'/*']);
+    del.sync([paths.dist+'/*'], {force: true});
     gutil.log(gutil.colors.yellow('Clean ' + paths.dist+ '/*' + ' directory!'));
 })
 
@@ -143,6 +163,6 @@ gulp.task('init-build', () => {
     gutil.log(gutil.colors.red('Build starting'));
 })
 
-gulp.task('build', ['init-build','utils:clean','engine:html','engine:styles','engine:images'], () => {
+gulp.task('build', ['init-build','utils:clean','engine:html','engine:styles','engine:js','engine:images'], () => {
     gutil.log(gutil.colors.green('Congrats build finished!'));
 })
