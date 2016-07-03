@@ -15,7 +15,8 @@ import sass             from    'gulp-sass';
 import sourcemaps       from    'gulp-sourcemaps';
 import stream           from    'stream';
 import gutil            from    'gulp-util';
-
+import del              from    'del'; //Comging with gulp
+import htmlmin          from    'gulp-htmlmin';
 
 /* Constants  */
 
@@ -39,15 +40,27 @@ const assets = {
 /* Watch task */
 gulp.task('watch', () => {
     livereload.listen();
-    gulp.watch(assets.srcImg,['engine:images']);
+    gulp.watch(assets.srcImg,['engine:html']);
     gulp.watch(scssPaths.src,['engine:styles']);
-});
+    gulp.watch(paths.src + '/*.html',['engine:html']);
+})
 
 
-gulp.task('default', () => {
+/*
 
-});
+    Minify html
+    --------
+*/
 
+gulp.task('engine:html', () => {
+    return gulp.src(paths.src + '/*.html')
+        .pipe(htmlmin({collapseWhitespace: true}))
+        .pipe(gulp.dest(paths.dist + '/'))
+        .on('end', () => {
+            gutil.log(gutil.colors.yellow('Finished engine:html'));
+        })
+    livereload();
+})
 
 /*
     Styles tasks
@@ -61,10 +74,17 @@ gulp.task('default', () => {
 */
 
 gulp.task('engine:styles', () => {
-    gulp.src(scssPaths.src)
+    return gulp.src(scssPaths.src)
         .pipe(sourcemaps.init())
+        .pipe(plumber(function(error) {
+                // Output an error message
+                gutil.log(gutil.colors.red('Error (' + error.plugin + '): ' + error.message));
+                // emit the end event, to properly end the task
+                this.emit('end');
+            })
+        )
         .pipe(sass({
-            outputStyle: 'compressed', errLogToConsole: true
+            outputStyle: 'compressed'
         }))
         .pipe(autoprefixer({
                 browsers: ['last 2 versions', '> 5%', 'ie >= 9', 'Firefox ESR'],
@@ -77,7 +97,7 @@ gulp.task('engine:styles', () => {
             gutil.log(gutil.colors.yellow('Finished engine:styles'));
         })
     livereload();
-});
+})
 
 
 /*
@@ -90,12 +110,39 @@ gulp.task('engine:styles', () => {
 */
 
 gulp.task('engine:images', () =>{
-    gulp.src(paths.src + '/img/*')
+    return gulp.src(paths.src + '/img/*')
         .pipe(deleted(assets.distImg, ["**/*"]))
         .pipe(changed(assets.distImg))
 		.pipe(imagemin())
 		.pipe(gulp.dest(assets.distImg))
         .on('end', () => {
-            gutil.log(gutil.colors.green('Finished engine:images'));
+            gutil.log(gutil.colors.yellow('Finished engine:images'));
         })
+})
+
+/* UTILS */
+
+
+/*
+    Clean
+    --------
+    Clean dist directory before build
+*/
+
+gulp.task('utils:clean', () => {
+    del([paths.dist+'/*']);
+    gutil.log(gutil.colors.yellow('Clean ' + paths.dist+ '/*' + ' directory!'));
+})
+
+/*
+    Build engine
+    --------
+*/
+
+gulp.task('init-build', () => {
+    gutil.log(gutil.colors.red('Build starting'));
+})
+
+gulp.task('build', ['init-build','utils:clean','engine:html','engine:styles','engine:images'], () => {
+    gutil.log(gutil.colors.green('Congrats build finished!'));
 })
