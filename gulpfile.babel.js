@@ -45,6 +45,7 @@ gulp.task('watch', () => {
     livereload.listen();
     gulp.watch(assets.srcImg,['engine:html']);
     gulp.watch(scssPaths.src,['engine:styles']);
+    gulp.watch(assets.srcJs,['engine:js']);
     gulp.watch(paths.src + '/*.html',['engine:html']);
 })
 
