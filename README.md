@@ -5,4 +5,4 @@ Boilerplate for front-end designer
 ```npm install```
 
 ## Testing
-```gulp```
+```gulp watch```
