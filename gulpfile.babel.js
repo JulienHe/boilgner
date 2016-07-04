@@ -19,6 +19,13 @@ import del              from    'del'; //Comging with gulp
 import htmlmin          from    'gulp-htmlmin';
 import babel            from    'gulp-babel';
 
+import source           from    'vinyl-source-stream';
+import buffer           from    'vinyl-buffer';
+import browserify       from    'browserify';
+import watchify         from    'watchify';
+import babelify         from    'babelify';
+import uglify           from    'gulp-uglify';
+
 /* Constants  */
 
 /* Directories of the project */
@@ -145,6 +152,39 @@ gulp.task('engine:js', () => {
             gutil.log(gutil.colors.yellow('Finished engine:js'));
         })
 })
+
+function compile(watch) {
+  // var bundler = watchify(browserify(assets.srcJs, { debug: true }).transform(babel));
+
+  var bundler = browserify({
+      entries: assets.srcJs,
+      cache: {},
+      packageCache: {},
+      plugin: [watchify]
+  });
+
+  function rebundle() {
+    return bundler
+        .transform(babelify, {presets: ['es2015']})
+        .bundle()
+        .pipe(source('main.js'))
+        .pipe(buffer())
+        .pipe(uglify())
+        .pipe(gulp.dest('./dist'))
+        .on('error', function(err) { console.error(err); this.emit('end'); })
+  }
+
+  if (watch) {
+    bundler.on('update', function() {
+      console.log('-> bundling...');
+      rebundle();
+    });
+  }
+
+  rebundle();
+}
+
+gulp.task('test', function() { return compile(); });
 
 
 /* UTILS */
