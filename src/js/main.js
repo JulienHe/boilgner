@@ -1,4 +1,7 @@
 'use strict';
-import hello from 'hello';
+import {TapeMachine} from "./hello";
 
-hello;
+const tp = new TapeMachine();
+tp.record("Hello... Hellooooo!!! Helloooo!!!!!");
+tp.play();
+// => Hello... Hellooooo!!! Helloooooo!!!!!

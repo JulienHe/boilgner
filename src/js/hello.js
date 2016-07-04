@@ -1,5 +1,11 @@
-const hello = function () {
-    document.write('Hello, world!');
+export class TapeMachine{
+    constructor(){
+        this.recordedMessage = '';
+    }
+    record(message){
+        this.recordedMessage = message;
+    }
+    play(){
+        console.log(this.recordedMessage);
+    }
 }
-
-export default hello;

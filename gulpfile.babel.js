@@ -40,15 +40,19 @@ const assets = {
 }
 
 
+
 /* Watch task */
 gulp.task('watch', () => {
     livereload.listen();
-    gulp.watch(assets.srcImg,['engine:html']);
+    gulp.watch(assets.srcImg,['engine:images']);
     gulp.watch(scssPaths.src,['engine:styles']);
     gulp.watch(assets.srcJs,['engine:js']);
     gulp.watch(paths.src + '/*.html',['engine:html']);
 })
 
+gulp.task('default',['engine:html', 'engine:styles', 'engine:js', 'engine:images', 'watch'], () => {
+  gutil.log(gutil.colors.yellow('You can work now!'));
+})
 
 /*
 
