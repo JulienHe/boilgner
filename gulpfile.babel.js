@@ -11,7 +11,6 @@ import deleted          from    'gulp-deleted';
 import imagemin         from    'gulp-imagemin';
 import plumber          from    'gulp-plumber';
 import sass             from    'gulp-sass';
-import sourcemaps       from    'gulp-sourcemaps';
 import stream           from    'stream';
 import gutil            from    'gulp-util';
 import del              from    'del'; //Comging with gulp
@@ -48,13 +47,13 @@ const assets = {
     disJs: `${paths.dist}/js/`,
 }
 
-// gulp.task('browser-sync', () => {
-//   browserSync({
-//     server: {
-//        baseDir: "./dist"
-//     }
-//   });
-// })
+gulp.task('browser-sync', () => {
+  browserSync.init({
+    server: {
+       baseDir: "./dist"
+    }
+  });
+})
 //
 // gulp.task('bs-reload', () => {
 //   browserSync.reload();
@@ -63,16 +62,13 @@ const assets = {
 
 /* Watch task */
 gulp.task('watch', () => {
-    browserSync.init({
-        server: "./dist"
-    });
     gulp.watch(assets.srcImg,['engine:images']);
     gulp.watch(scssPaths.src,['engine:styles']);
     gulp.watch(assets.srcJs,['engine:js']);
     gulp.watch(paths.src + '/*.html',['engine:html']);
 })
 
-gulp.task('default',['engine:html', 'engine:styles', 'engine:js', 'engine:images', 'watch'], () => {
+gulp.task('default',['browser-sync','engine:html', 'engine:styles', 'engine:js', 'engine:images', 'watch'], () => {
   gutil.log(gutil.colors.yellow('You can work now!'));
 })
 
@@ -94,17 +90,14 @@ gulp.task('engine:html', () => {
 /*
     Styles tasks
     --------
-    Create the sourcemaps
     Compile Sass -> Compressed & ErrorLog
     Prefix eveyrthing
-    Sourcemaps in folder
     Css in dest folder
     Log when it's done
 */
 
 gulp.task('engine:styles', () => {
     return gulp.src(scssPaths.src)
-        .pipe(sourcemaps.init())
         .pipe(plumber(function(error) {
                 // Output an error message
                 gutil.log(gutil.colors.red('Error (' + error.plugin + '): ' + error.message));
@@ -120,9 +113,10 @@ gulp.task('engine:styles', () => {
                 cascade: false
             })
         )
-        .pipe(sourcemaps.write('./maps'))
         .pipe(gulp.dest(scssPaths.dist))
-        .pipe(browserSync.stream())
+        .pipe(browserSync.reload({
+          stream: true
+        }))
         .on('end', () => {
             gutil.log(gutil.colors.yellow('Finished engine:styles'));
         })
