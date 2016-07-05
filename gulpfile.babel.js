@@ -9,7 +9,6 @@ import cached           from    'gulp-cached';
 import changed          from    'gulp-changed';
 import deleted          from    'gulp-deleted';
 import imagemin         from    'gulp-imagemin';
-import livereload       from    'gulp-livereload';
 import plumber          from    'gulp-plumber';
 import sass             from    'gulp-sass';
 import sourcemaps       from    'gulp-sourcemaps';
@@ -25,8 +24,11 @@ import browserify       from    'browserify';
 import watchify         from    'watchify';
 import babelify         from    'babelify';
 import uglify           from    'gulp-uglify';
+import browserSync      from    'browser-sync';
 
 /* Constants  */
+
+// const reload = browserSync.reload;
 
 /* Directories of the project */
 const paths = {
@@ -46,11 +48,24 @@ const assets = {
     disJs: `${paths.dist}/js/`,
 }
 
+// gulp.task('browser-sync', () => {
+//   browserSync({
+//     server: {
+//        baseDir: "./dist"
+//     }
+//   });
+// })
+//
+// gulp.task('bs-reload', () => {
+//   browserSync.reload();
+// })
 
 
 /* Watch task */
 gulp.task('watch', () => {
-    livereload.listen();
+    browserSync.init({
+        server: "./dist"
+    });
     gulp.watch(assets.srcImg,['engine:images']);
     gulp.watch(scssPaths.src,['engine:styles']);
     gulp.watch(assets.srcJs,['engine:js']);
@@ -74,7 +89,6 @@ gulp.task('engine:html', () => {
         .on('end', () => {
             gutil.log(gutil.colors.yellow('Finished engine:html'));
         })
-    livereload();
 })
 
 /*
@@ -108,10 +122,10 @@ gulp.task('engine:styles', () => {
         )
         .pipe(sourcemaps.write('./maps'))
         .pipe(gulp.dest(scssPaths.dist))
+        .pipe(browserSync.stream())
         .on('end', () => {
             gutil.log(gutil.colors.yellow('Finished engine:styles'));
         })
-    livereload();
 })
 
 
@@ -128,8 +142,8 @@ gulp.task('engine:images', () =>{
     return gulp.src(paths.src + '/img/*')
         .pipe(deleted(assets.distImg, ["**/*"]))
         .pipe(changed(assets.distImg))
-		.pipe(imagemin())
-		.pipe(gulp.dest(assets.distImg))
+        .pipe(imagemin())
+		    .pipe(gulp.dest(assets.distImg))
         .on('end', () => {
             gutil.log(gutil.colors.yellow('Finished engine:images'));
         })
@@ -142,19 +156,7 @@ gulp.task('engine:images', () =>{
 
 */
 
-gulp.task('engine:js', () => {
-    return gulp.src(assets.srcJs)
-    	.pipe(babel({
-    		presets: ['es2015']
-    	}))
-    	.pipe(gulp.dest(assets.disJs))
-        .on('end', () => {
-            gutil.log(gutil.colors.yellow('Finished engine:js'));
-        })
-})
-
 function compile(watch) {
-  // var bundler = watchify(browserify(assets.srcJs, { debug: true }).transform(babel));
 
   var bundler = browserify({
       entries: assets.srcJs,
@@ -170,8 +172,13 @@ function compile(watch) {
         .pipe(source('main.js'))
         .pipe(buffer())
         .pipe(uglify())
-        .pipe(gulp.dest('./dist'))
-        .on('error', function(err) { console.error(err); this.emit('end'); })
+        .pipe(gulp.dest('./dist/js'))
+        .on('error', (err) => {
+            console.error(err); this.emit('end');
+        })
+        .on('end', () => {
+            gutil.log(gutil.colors.yellow('Finished engine:js'));
+        })
   }
 
   if (watch) {
@@ -184,7 +191,7 @@ function compile(watch) {
   rebundle();
 }
 
-gulp.task('test', function() { return compile(); });
+gulp.task('engine:js', function() { return compile(); });
 
 
 /* UTILS */
