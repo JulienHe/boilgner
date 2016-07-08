@@ -150,17 +150,8 @@ gulp.task('engine:images', () =>{
 
 */
 
-function compile(watch) {
-
-  var bundler = browserify({
-      entries: assets.srcJs,
-      cache: {},
-      packageCache: {},
-      plugin: [watchify]
-  });
-
-  function rebundle() {
-    return bundler
+gulp.task('engine:js', () => {
+    browserify(assets.srcJs)
         .transform(babelify, {presets: ['es2015']})
         .bundle()
         .pipe(source('main.js'))
@@ -173,19 +164,7 @@ function compile(watch) {
         .on('end', () => {
             gutil.log(gutil.colors.yellow('Finished engine:js'));
         })
-  }
-
-  if (watch) {
-    bundler.on('update', function() {
-      console.log('-> bundling...');
-      rebundle();
-    });
-  }
-
-  rebundle();
-}
-
-gulp.task('engine:js', function() { return compile(); });
+});
 
 
 /* UTILS */
