@@ -13,7 +13,7 @@ import plumber          from    'gulp-plumber';
 import sass             from    'gulp-sass';
 import stream           from    'stream';
 import gutil            from    'gulp-util';
-import del              from    'del'; //Comging with gulp
+import del              from    'del'; //Coming with gulp
 import htmlmin          from    'gulp-htmlmin';
 import babel            from    'gulp-babel';
 

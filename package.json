@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Boilerplate for front-end designer with webpack",
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "del": "^2.2.1"
+  },
   "devDependencies": {
     "autoprefixer": "^6.3.6",
     "babel": "^6.5.2",
