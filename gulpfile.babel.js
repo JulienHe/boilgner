@@ -20,7 +20,6 @@ import babel            from    'gulp-babel';
 import source           from    'vinyl-source-stream';
 import buffer           from    'vinyl-buffer';
 import browserify       from    'browserify';
-import watchify         from    'watchify';
 import babelify         from    'babelify';
 import uglify           from    'gulp-uglify';
 import browserSync      from    'browser-sync';
