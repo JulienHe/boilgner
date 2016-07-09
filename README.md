@@ -25,7 +25,9 @@ Make sure these are installed first.
 * [Gulp](http://gulpjs.com) `sudo npm install -g gulp`
 
 ## Testing
-```gulp```
+```
+gulp
+```
 
 ## File Structure
 
