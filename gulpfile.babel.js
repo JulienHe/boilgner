@@ -53,26 +53,8 @@ gulp.task('browser-sync', () => {
     }
   });
 })
-//
-// gulp.task('bs-reload', () => {
-//   browserSync.reload();
-// })
-
-
-/* Watch task */
-gulp.task('watch', () => {
-    gulp.watch(assets.srcImg,['engine:images']);
-    gulp.watch(scssPaths.src,['engine:styles']);
-    gulp.watch(assets.srcJs,['engine:js']);
-    gulp.watch(paths.src + '/*.html',['engine:html']);
-})
-
-gulp.task('default',['browser-sync','engine:html', 'engine:styles', 'engine:js', 'engine:images', 'watch'], () => {
-  gutil.log(gutil.colors.yellow('You can work now!'));
-})
 
 /*
-
     Minify html
     --------
 */
@@ -142,11 +124,16 @@ gulp.task('engine:images', () =>{
         })
 })
 
+/*
+    Process fonts (basically a copy paste)
+*/
+gulp.task('engine:fonts', () => {
+   gulp.src('./src/fonts/*')
+   .pipe(gulp.dest('./dist/fonts'));
+});
 
 /*
-
     Process Javascript
-
 */
 
 gulp.task('engine:js', () => {
@@ -178,6 +165,22 @@ gulp.task('utils:clean', () => {
     gutil.log(gutil.colors.yellow('Clean ' + paths.dist+ '/*' + ' directory!'));
 })
 
+
+/*
+    Watch & Default
+*/
+gulp.task('watch', () => {
+    gulp.watch(assets.srcImg,['engine:images']);
+    gulp.watch(scssPaths.src,['engine:styles']);
+    gulp.watch(assets.srcJs,['engine:js']);
+    gulp.watch(paths.src + '/*.html',['engine:html']);
+})
+
+gulp.task('default',['browser-sync','engine:html', 'engine:styles', 'engine:js', 'engine:images', 'engine:fonts', 'watch'], () => {
+  gutil.log(gutil.colors.yellow('You can work now!'));
+})
+
+
 /*
     Build engine
     --------
@@ -187,6 +190,7 @@ gulp.task('init-build', () => {
     gutil.log(gutil.colors.red('Build starting'));
 })
 
-gulp.task('build', ['init-build','utils:clean','engine:html','engine:styles','engine:js','engine:images'], () => {
+
+gulp.task('build', ['init-build','utils:clean','engine:html','engine:styles','engine:js','engine:images', 'engine:fonts'], () => {
     gutil.log(gutil.colors.green('Congrats build finished!'));
 })
