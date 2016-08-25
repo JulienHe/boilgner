@@ -1,5 +1,7 @@
+/* Every dev stuff */
 @import "dev/dev";
 
-body{
-    background:red;
-}
+/* Basic boilgner framework */
+@import "base/reset";
+@import "base/vars";
+@import "base/mixins";
