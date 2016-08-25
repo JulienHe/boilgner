@@ -171,9 +171,9 @@ gulp.task('utils:clean', () => {
 */
 gulp.task('watch', () => {
     gulp.watch(assets.srcImg,['engine:images']);
-    gulp.watch(scssPaths.src,['engine:styles']);
-    gulp.watch(assets.srcJs,['engine:js']);
-    gulp.watch(paths.src + '/*.html',['engine:html']);
+    gulp.watch('./src/scss/**/*.scss',['engine:styles']);
+    gulp.watch('./src/js/*.js',['engine:js']);
+    gulp.watch('./src/*.html',['engine:html']);
 })
 
 gulp.task('default',['browser-sync','engine:html', 'engine:styles', 'engine:js', 'engine:images', 'engine:fonts', 'watch'], () => {
